@@ -29,7 +29,7 @@ module.exports = {
       .addAttachmentOption(opt =>
         opt.setName('grid')
           .setDescription('クラフト台に配置した画像')
-          .setRequired(false)
+          .setRequired(true)
       )
   ),
 
