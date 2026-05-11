@@ -1,11 +1,14 @@
 {
-  "name": "minecraft-pve-bot",
+  "name": "AziHelper",
   "version": "1.0.0",
   "description": "Minecraft PVE Server Discord Bot",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "deploy": "node deploy-commands.js"
+  },
+  "engines": {
+    "node": "22.x"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
