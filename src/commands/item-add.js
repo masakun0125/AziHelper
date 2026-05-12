@@ -20,6 +20,16 @@ module.exports = {
       opt.setName('lore')
         .setDescription('アイテムのlore画像')
         .setRequired(true)
+    )
+    .addStringOption(opt =>
+      opt.setName('location')
+        .setDescription('アイテムの入手場所')
+        .setRequired(false)
+    )
+    .addStringOption(opt =>
+      opt.setName('tradelocation')
+        .setDescription('アイテムの交易場所')
+        .setRequired(false)
     ),
 
   async execute(interaction) {
@@ -37,6 +47,8 @@ module.exports = {
     const name = interaction.options.getString('name');
     const icon = interaction.options.getAttachment('icon');
     const lore = interaction.options.getAttachment('lore');
+    const location = interaction.options.getString('location');
+    const tradelocation = interaction.options.getString('tradelocation');
 
     // 画像チェック
     if (!icon.contentType?.startsWith('image/')) {
@@ -62,6 +74,8 @@ module.exports = {
       name,
       icon_url: icon.url,
       lore_url: lore.url,
+      location: location || null,
+      tradelocation: tradelocation || null,
     });
 
     if (error) {
