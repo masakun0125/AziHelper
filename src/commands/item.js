@@ -53,6 +53,27 @@ module.exports = {
       .setImage(item.lore_url)
       .setTimestamp();
 
+    // location と tradelocation をフィールドとして追加
+    const fields = [];
+    if (item.location) {
+      fields.push({
+        name: '📍 入手場所',
+        value: item.location,
+        inline: false,
+      });
+    }
+    if (item.tradelocation) {
+      fields.push({
+        name: '🏪 交易場所',
+        value: item.tradelocation,
+        inline: false,
+      });
+    }
+
+    if (fields.length > 0) {
+      embed.addFields(fields);
+    }
+
     const components = [];
     if (recipe) {
       const row = new ActionRowBuilder().addComponents(
