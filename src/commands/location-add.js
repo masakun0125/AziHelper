@@ -44,15 +44,15 @@ module.exports = {
   },
 
   async execute(interaction) {
+    // 先に defer を呼ぶ
+    await interaction.deferReply({ ephemeral: true });
+
     const isAdmin = await checkAdmin(interaction.user.id);
     if (!isAdmin) {
-      return interaction.reply({
+      return interaction.editReply({
         content: '❌ このコマンドは管理者のみ使用できます。',
-        ephemeral: true,
       });
     }
-
-    await interaction.deferReply({ ephemeral: true });
 
     const itemname = interaction.options.getString('itemname');
     const server = interaction.options.getString('server');
