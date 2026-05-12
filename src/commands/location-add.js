@@ -2,8 +2,6 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const supabase = require('../lib/supabase');
 const checkAdmin = require('../lib/checkAdmin');
 
-const SERVERS = ['life', 'liferesource', 'lifepve'];
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('location-add')
@@ -26,7 +24,12 @@ module.exports = {
     )
     .addStringOption(opt =>
       opt.setName('location')
-        .setDescription('ドロップ場所（省略可）')
+        .setDescription('ドロップ場所')
+        .setRequired(true)
+    )
+    .addStringOption(opt =>
+      opt.setName('mob')
+        .setDescription('ドロップするモブ（省略可）')
         .setRequired(false)
     ),
 
@@ -44,7 +47,6 @@ module.exports = {
   },
 
   async execute(interaction) {
-    // 先に defer を呼ぶ
     await interaction.deferReply({ ephemeral: true });
 
     const isAdmin = await checkAdmin(interaction.user.id);
@@ -56,7 +58,8 @@ module.exports = {
 
     const itemname = interaction.options.getString('itemname');
     const server = interaction.options.getString('server');
-    const location = interaction.options.getString('location') || '';
+    const location = interaction.options.getString('location');
+    const mob = interaction.options.getString('mob') || null;
 
     // アイテム存在チェック
     const { data: item } = await supabase
@@ -82,7 +85,7 @@ module.exports = {
       // 更新
       const { error: updateError } = await supabase
         .from('locations')
-        .update({ location })
+        .update({ location, mob })
         .eq('item_name', itemname)
         .eq('server', server);
       error = updateError;
@@ -94,6 +97,7 @@ module.exports = {
           item_name: itemname,
           server,
           location,
+          mob,
         });
       error = insertError;
     }
@@ -104,9 +108,14 @@ module.exports = {
     }
 
     const action = existing ? '更新' : '登録';
+    let description = `✅ \`${itemname}\` のドロップ場所を${action}しました。\nサーバー: ${server}\n場所: ${location}`;
+    if (mob) {
+      description += `\nモブ: ${mob}`;
+    }
+
     const embed = new EmbedBuilder()
       .setColor(0x57f287)
-      .setDescription(`✅ \`${itemname}\` のドロップ場所を${action}しました。\nサーバー: ${server}\n場所: ${location || '（指定なし）'}`)
+      .setDescription(description)
       .setTimestamp();
 
     return interaction.editReply({ embeds: [embed] });
