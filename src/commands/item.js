@@ -53,18 +53,25 @@ module.exports = {
       .setImage(item.lore_url)
       .setTimestamp();
 
-    // location と tradelocation をフィールドとして追加
     const fields = [];
+
+    if (item.pve_level !== null && item.pve_level !== undefined) {
+      fields.push({
+        name: '必要PVEレベル',
+        value: String(item.pve_level),
+        inline: true,
+      });
+    }
     if (item.location) {
       fields.push({
-        name: '📍 入手場所',
+        name: 'アイテムの入手場所',
         value: item.location,
         inline: false,
       });
     }
     if (item.tradelocation) {
       fields.push({
-        name: '🏪 交易場所',
+        name: 'アイテムの取引場所',
         value: item.tradelocation,
         inline: false,
       });
@@ -79,7 +86,7 @@ module.exports = {
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId(`recipe:${name}`)
-          .setLabel('📋 レシピを見る')
+          .setLabel('レシピを見る')
           .setStyle(ButtonStyle.Primary)
       );
       components.push(row);
