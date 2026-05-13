@@ -1,14 +1,16 @@
 const supabase = require('./supabase');
 
-async function checkAdmin(discordId) {
+module.exports = async function checkAdmin(discordId) {
+
   const { data, error } = await supabase
     .from('admins')
-    .select('discord_id')
+    .select('discord_id, role')
     .eq('discord_id', discordId)
     .single();
 
-  if (error || !data) return false;
-  return true;
-}
+  if (error || !data) {
+    return null;
+  }
 
-module.exports = checkAdmin;
+  return data;
+};
