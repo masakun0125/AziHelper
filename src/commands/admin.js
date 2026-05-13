@@ -1,37 +1,82 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+} = require('discord.js');
+
 const supabase = require('../lib/supabase');
-const checkAdmin = require('../lib/checkAdmin');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('admin')
-    .setDescription('管理者一覧を表示する'),
+    .setDescription('staff一覧を表示する'),
 
   async execute(interaction) {
+
     await interaction.deferReply();
 
-    const { data: admins, error } = await supabase
+    const { data: staffs, error } = await supabase
       .from('admins')
       .select('*')
-      .order('added_at', { ascending: false });
+      .order('added_at', {
+        ascending: false,
+      });
 
-    if (error || !admins || admins.length === 0) {
-      return interaction.editReply('❌ 管理者が登録されていません。');
+    if (error || !staffs || staffs.length === 0) {
+      return interaction.editReply(
+        '❌ staffが登録されていません。'
+      );
     }
+
+    // roleごとに分離
+    const admins = staffs.filter(
+      s => s.role === 'admin'
+    );
+
+    const editors = staffs.filter(
+      s => s.role === 'editor'
+    );
 
     const embed = new EmbedBuilder()
       .setColor(0x5865f2)
-      .setTitle('👨‍💼 管理者一覧')
+      .setTitle('StaffList')
       .setTimestamp();
 
-    const fields = admins.map((admin, index) => ({
-      name: `${index + 1}. Discord ID`,
-      value: admin.discord_id,
+    // admin欄
+    embed.addFields({
+      name: 'Admin',
+
+      value:
+        admins.length > 0
+          ? admins
+              .map(
+                a =>
+                  `• <@${a.discord_id}> (\`${a.discord_id}\`)`
+              )
+              .join('\n')
+          : 'なし',
+
       inline: false,
-    }));
+    });
 
-    embed.addFields(fields);
+    // editor欄
+    embed.addFields({
+      name: 'Editor',
 
-    return interaction.editReply({ embeds: [embed] });
+      value:
+        editors.length > 0
+          ? editors
+              .map(
+                e =>
+                  `• <@${e.discord_id}> (\`${e.discord_id}\`)`
+              )
+              .join('\n')
+          : 'なし',
+
+      inline: false,
+    });
+
+    return interaction.editReply({
+      embeds: [embed],
+    });
   },
 };
