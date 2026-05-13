@@ -104,7 +104,6 @@ module.exports = {
       .insert({
         name,
 
-        -- Discord CDN URLを直接保存
         icon_url: icon.url,
         lore_url: lore.url,
 
