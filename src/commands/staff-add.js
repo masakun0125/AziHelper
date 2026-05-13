@@ -9,7 +9,7 @@ const checkAdmin = require('../lib/checkAdmin');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('staff-add')
-    .setDescription('staffを追加')
+    .setDescription('staffを追加する')
 
     .addStringOption(opt =>
       opt.setName('role')
@@ -29,26 +29,30 @@ module.exports = {
 
     .addStringOption(opt =>
       opt.setName('discord_id')
-        .setDescription('Discord ID')
+        .setDescription('追加するDiscord ID')
         .setRequired(true)
     ),
 
   async execute(interaction) {
+
+    // adminチェック
     const staff = await checkAdmin(
       interaction.user.id
     );
 
+    // サーバーオーナーは常に許可
     const isOwner =
       interaction.guild?.ownerId ===
       interaction.user.id;
 
+    // admin以外拒否
     if (
       (!staff || staff.role !== 'admin') &&
       !isOwner
     ) {
       return interaction.reply({
         content:
-          '❌ adminまたはサーバーオーナー専用です。',
+          '❌ admin専用コマンドです。',
         ephemeral: true,
       });
     }
@@ -63,6 +67,7 @@ module.exports = {
     const discordId =
       interaction.options.getString('discord_id');
 
+    // 既存チェック
     const { data: existing } = await supabase
       .from('admins')
       .select('discord_id')
@@ -71,10 +76,11 @@ module.exports = {
 
     if (existing) {
       return interaction.editReply(
-        '❌ 既に登録されています。'
+        `❌ <@${discordId}> は既に登録されています。`
       );
     }
 
+    // 追加
     const { error } = await supabase
       .from('admins')
       .insert({
@@ -86,14 +92,14 @@ module.exports = {
       console.error(error);
 
       return interaction.editReply(
-        '❌ 登録に失敗しました。'
+        '❌ 登録中にエラーが発生しました。'
       );
     }
 
     const embed = new EmbedBuilder()
       .setColor(0x57f287)
       .setDescription(
-        `✅ <@${discordId}> を ${role} に追加しました。`
+        `✅ <@${discordId}> を \`${role}\` として追加しました。`
       )
       .setTimestamp();
 
