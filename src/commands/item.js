@@ -71,7 +71,7 @@ module.exports = {
 
     if (item.pve_level !== null) {
       fields.push({
-        name: '⚔️ 必要PVEレベル',
+        name: '必要PVEレベル',
         value: String(item.pve_level),
         inline: true,
       });
@@ -79,7 +79,7 @@ module.exports = {
 
     if (item.location) {
       fields.push({
-        name: '📍 入手場所',
+        name: '入手場所',
         value: item.location,
         inline: false,
       });
@@ -87,7 +87,7 @@ module.exports = {
 
     if (item.tradelocation) {
       fields.push({
-        name: '🏪 交易場所',
+        name: '交易場所',
         value: item.tradelocation,
         inline: false,
       });
@@ -95,7 +95,7 @@ module.exports = {
 
     if (item.craftlocation) {
       fields.push({
-        name: '🔨 クラフト場所',
+        name: 'クラフト場所',
         value: item.craftlocation,
         inline: false,
       });
@@ -103,7 +103,7 @@ module.exports = {
 
     if (item.description) {
       fields.push({
-        name: '📝 説明',
+        name: '説明',
         value: item.description,
         inline: false,
       });
@@ -120,7 +120,7 @@ module.exports = {
         .addComponents(
           new ButtonBuilder()
             .setCustomId(`recipe:${name}`)
-            .setLabel('📋 レシピを見る')
+            .setLabel('レシピを見る')
             .setStyle(ButtonStyle.Primary)
         );
 
