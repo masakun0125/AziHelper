@@ -17,6 +17,12 @@ module.exports = {
         .setDescription('新しいアイテム名（省略可）')
         .setRequired(false)
     )
+    .addIntegerOption(opt =>
+      opt.setName('pve_level')
+        .setDescription('必要PVEレベル（省略可）')
+        .setRequired(false)
+        .setMinValue(0)
+    )
     .addStringOption(opt =>
       opt.setName('location')
         .setDescription('入手場所（省略可）')
@@ -53,10 +59,10 @@ module.exports = {
 
     const name = interaction.options.getString('name');
     const newName = interaction.options.getString('newname');
+    const pveLevel = interaction.options.getInteger('pve_level');
     const location = interaction.options.getString('location');
     const tradelocation = interaction.options.getString('tradelocation');
 
-    // アイテム存在チェック
     const { data: item } = await supabase
       .from('items')
       .select('*')
@@ -67,9 +73,9 @@ module.exports = {
       return interaction.editReply(`❌ \`${name}\` は登録されていません。`);
     }
 
-    // 更新データを構築
     const updateData = {};
     if (newName) updateData.name = newName;
+    if (pveLevel !== null) updateData.pve_level = pveLevel;
     if (location !== null) updateData.location = location;
     if (tradelocation !== null) updateData.tradelocation = tradelocation;
 
